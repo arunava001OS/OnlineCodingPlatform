@@ -80,14 +80,11 @@ function Codescreen({ problem }) {
             <h2>
               {problem.id}. {problem.slug}
             </h2>
-            <p>
-              {input}
-              {languageid}
-            </p>
             <p>{problem.statement}</p>
             <p>Input : {problem.input_description}</p>
             <p>Output : {problem.output_description}</p>
             <p>Constraints : {problem.constraints}</p>
+            <button type="button" class="probtop btn btn-outline-info" onClick={(e) => {window.location.replace('/')}}><i class="fas fa-arrow-up"></i>More Problems</button>
           </div>
           <div className="right col-md-7">
             <label for="tags" className="mb-2">
