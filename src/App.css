@@ -33,4 +33,5 @@
   width: 100%;
   height: 25vh;
   overflow-y: scroll;
+  font-size: 15px;
 }

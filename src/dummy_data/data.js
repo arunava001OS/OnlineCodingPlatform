@@ -24,10 +24,27 @@ const data = {
             "output_description" : 'For each input return True or False',
             "constraints" : "1<=N<=1000000000",
             "inputs" : [
-                "2\n2\n3"
+                "2",
+                "3"
             ],
             "outputs" : [
-                "True\nTrue\nFalse"
+                "True",
+                "False"
+            ]
+        },
+        {
+            "id" : 3,
+            "slug" : "Print upto N",
+            "statement" : 'Given a number N print 1 to N.',
+            "time_constraint" : 100000, /* in milliseconds */
+            "input_description" : 'Any integer N',
+            "output_description" : 'For each input print all numbers form 1 to N',
+            "constraints" : "1<=N<=1000000000",
+            "inputs" : [
+                "2"
+            ],
+            "outputs" : [
+                "1\n2",
             ]
         },
     ]
