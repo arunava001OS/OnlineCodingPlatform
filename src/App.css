@@ -59,6 +59,9 @@ body {
   height: 40vh;
   font-size: 14px;
   overflow-y: scroll;
+  background-color: rgb(6, 1, 46);
+  color: white;
+  text-decoration: none;
 }
 
 #outputarea {
@@ -66,4 +69,8 @@ body {
   height: 25vh;
   overflow-y: scroll;
   font-size: 15px;
+  background-color: black;
+  color: white;
+  font-family: monospace;
+
 }

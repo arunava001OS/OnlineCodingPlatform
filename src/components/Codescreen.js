@@ -11,9 +11,9 @@ function Codescreen({ problem }) {
     console.log("creating ");
     e.preventDefault();
     let outputtext = document.getElementById("outputarea");
-    outputtext.innerHTML = "";
+    let answers = []
     for (let i = 0; i < problem.inputs.length; i++) {
-      outputtext.innerHTML += `Creating Submission${i + 1}......\n`;
+      outputtext.innerHTML += `OnlineCodingPlatform:~ user$ Creating Submission${i + 1}......\n`;
 
       const response = await instance.post("/submissions", {
         source_code: input,
@@ -36,9 +36,7 @@ function Codescreen({ problem }) {
         jsonGetSolution.compile_output == null
       ) {
         console.log("while loop");
-        outputtext.innerHTML = `Creating Submission ${i + 1}... \nSubmission ${
-          i + 1
-        } Created ...\nChecking Submission ${i + 1} Status\nstatus : ${
+        outputtext.innerHTML += `Checking Submission ${i + 1} Status\nstatus : ${
           jsonGetSolution.status.description
         }\n`;
         if (jsonResponse.data.token) {
@@ -51,12 +49,11 @@ function Codescreen({ problem }) {
         }
         if (jsonGetSolution.stdout) {
           const output = jsonGetSolution.stdout;
-					const input = jsonGetSolution.stdin
-          outputtext.innerHTML += `Results${
-            i + 1
-          }\nInput:\n${input}\nOutput:\n${output}\nExecution Time : ${
+					const input = jsonGetSolution.stdin;
+          answers.push(output)
+          outputtext.innerHTML += `Input:\n${input}\nOutput:\n${output}\nExecution Time : ${
             jsonGetSolution.time
-          } Secs\nMemory used : ${jsonGetSolution.memory} bytes`;
+          } Secs\nMemory used : ${jsonGetSolution.memory} bytes\n`;
         } else if (jsonGetSolution.stderr) {
           const error = jsonGetSolution.stderr;
 
@@ -107,6 +104,7 @@ function Codescreen({ problem }) {
               </label>
               <textarea
                 id="codearea"
+                spellCheck="false"
                 onChange={(e) => setInput(e.target.value)}
               ></textarea>
             </div>
