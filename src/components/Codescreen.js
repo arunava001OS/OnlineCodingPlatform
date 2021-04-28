@@ -1,73 +1,105 @@
-import { React, useState } from "react";
+import { React, useState, useEffect } from "react";
 import instance from "../config";
 
-function Codescreen({ problem }) {
+function Codescreen({ problem, setCodescreen }) {
   const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
   const [languageid, setLanguageid] = useState(71);
-  const [userinput, setUserinput] = useState("");
 
+  useEffect(() => {
+    let item = localStorage.getItem(`${problem.id}`);
+    if (item) {
+      let codearea = document.getElementById("codearea");
+      codearea.value = item;
+    }
+  }, []);
   const handleSubmit = async (e) => {
     console.log("creating ");
     e.preventDefault();
     let outputtext = document.getElementById("outputarea");
-    let answers = []
-    for (let i = 0; i < problem.inputs.length; i++) {
-      outputtext.innerHTML += `OnlineCodingPlatform:~ user$ Creating Submission${i + 1}......\n`;
+    let answers = [];
+    if (input.length == 0) {
+      outputtext.innerHTML +=`OnlineCodingPlatform:~ Please write some code first :P\n`;
+    } else {
+      for (let i = 0; i < problem.inputs.length; i++) {
+        outputtext.innerHTML += `OnlineCodingPlatform:~ user$ Creating Submission${
+          i + 1
+        }......\n`;
 
-      const response = await instance.post("/submissions", {
-        source_code: input,
-        stdin: problem.inputs[i],
-        language_id: languageid,
-      });
-      outputtext.innerHTML += `Submission${i + 1} Created ...\n`;
-      const jsonResponse = response;
-      console.log(response.data);
+        const response = await instance.post("/submissions", {
+          source_code: input,
+          stdin: problem.inputs[i],
+          language_id: languageid,
+        });
+        outputtext.innerHTML += `Submission${i + 1} Created ...\n`;
+        const jsonResponse = response;
+        console.log(response.data);
 
-      let jsonGetSolution = {
-        
+        let jsonGetSolution = {
           status: { description: "Queue" },
           stderr: null,
           compile_output: null,
-      };
-      while (
-        jsonGetSolution.status.description !== "Accepted" &&
-        jsonGetSolution.stderr == null &&
-        jsonGetSolution.compile_output == null
-      ) {
-        console.log("while loop");
-        outputtext.innerHTML += `Checking Submission ${i + 1} Status\nstatus : ${
-          jsonGetSolution.status.description
-        }\n`;
-        if (jsonResponse.data.token) {
-          console.log("token present");
-          let getSolution = await instance.get(
-            `/submissions/${jsonResponse.data.token}?base64_encoded=True&fields=*`
-          );
-          jsonGetSolution = getSolution.data;
-          console.log(jsonGetSolution);
-        }
-        if (jsonGetSolution.stdout) {
-          const output = jsonGetSolution.stdout;
-					const input = jsonGetSolution.stdin;
-          answers.push(output)
-          outputtext.innerHTML += `Input:\n${input}\nOutput:\n${output}\nExecution Time : ${
-            jsonGetSolution.time
-          } Secs\nMemory used : ${jsonGetSolution.memory} bytes\n`;
-        } else if (jsonGetSolution.stderr) {
-          const error = jsonGetSolution.stderr;
-
-          outputtext.innerHTML += `\n Error for prob ${i + 1} :${error}`;
-        } else {
-          const compilation_error = atob(jsonGetSolution.compile_output);
-
-          outputtext.innerHTML += `\n Error for prob ${
+        };
+        while (
+          jsonGetSolution.status.description !== "Accepted" &&
+          jsonGetSolution.stderr == null &&
+          jsonGetSolution.compile_output == null
+        ) {
+          console.log("while loop");
+          outputtext.innerHTML += `Checking Submission ${
             i + 1
-          }:${compilation_error}`;
+          } Status\nstatus : ${jsonGetSolution.status.description}\n`;
+          if (jsonResponse.data.token) {
+            console.log("token present");
+            let getSolution = await instance.get(
+              `/submissions/${jsonResponse.data.token}?base64_encoded=True&fields=*`
+            );
+            jsonGetSolution = getSolution.data;
+            console.log(jsonGetSolution);
+          }
+          if (jsonGetSolution.stdout) {
+            const output = jsonGetSolution.stdout;
+            const input = jsonGetSolution.stdin;
+            answers.push(output);
+            outputtext.innerHTML += `Input:\n${input}\nOutput:\n${output}\nExecution Time : ${jsonGetSolution.time} Secs\nMemory used : ${jsonGetSolution.memory} bytes\n`;
+          } else if (jsonGetSolution.stderr) {
+            const error = jsonGetSolution.stderr;
+
+            outputtext.innerHTML += `\n Error for prob ${i + 1} :${error}`;
+          } else {
+            const compilation_error = atob(jsonGetSolution.compile_output);
+
+            outputtext.innerHTML += `\n Error for prob ${
+              i + 1
+            }:${compilation_error}`;
+          }
         }
       }
     }
   };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    let savedItem = localStorage.getItem(`${problem.id}`);
+    if (savedItem) {
+      localStorage.removeItem(`${problem.id}`);
+    }
+    localStorage.setItem(`${problem.id}`, input);
+  };
+  const handleReset = (e) => {
+    e.preventDefault();
+    let savedItem = localStorage.getItem(`${problem.id}`);
+    if (savedItem) {
+      localStorage.removeItem(`${problem.id}`);
+    }
+    let codearea = document.getElementById("codearea");
+    codearea.value = "";
+    setInput("");
+  };
+
+  const handleClearTerminal = () => {
+    let outputtext = document.getElementById("outputarea");
+    outputtext.innerHTML = 'OnlineCodingPlatform:~ user$ \n'
+  }
 
   return (
     <div id="codescreen">
@@ -81,7 +113,15 @@ function Codescreen({ problem }) {
             <p>Input : {problem.input_description}</p>
             <p>Output : {problem.output_description}</p>
             <p>Constraints : {problem.constraints}</p>
-            <button type="button" class="probtop btn btn-outline-info" onClick={(e) => {window.location.replace('/')}}><i class="fas fa-arrow-up"></i>More Problems</button>
+            <button
+              type="button"
+              class="probtop btn btn-outline-info"
+              onClick={(e) => {
+                setCodescreen(false);
+              }}
+            >
+              <i class="fas fa-arrow-up"></i>More Problems
+            </button>
           </div>
           <div className="right col-md-7">
             <label for="tags" className="mb-2">
@@ -93,9 +133,8 @@ function Codescreen({ problem }) {
               id="tags"
               className="form-control form-inline language"
             >
-              <option value="2">C++</option>
-              <option value="1">C</option>
-              <option value="4">Java</option>
+              <option value="52">C++</option>
+              <option value="49">C</option>
               <option value="71">Python</option>
             </select>
             <div>
@@ -113,8 +152,30 @@ function Codescreen({ problem }) {
               class="btn btn-outline-info"
               onClick={handleSubmit}
             >
-              Run
+              <i class="fas fa-play"></i>  Run
             </button>
+            <button
+              type="button"
+              class="btn btn-outline-success mx-1"
+              onClick={handleSave}
+            >
+              <i class="far fa-save"></i>  Save
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              onClick={handleReset}
+            >
+              <i class="fas fa-trash"></i>  Reset
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary mx-1"
+              onClick={handleClearTerminal}
+            >
+              <i class="fas fa-terminal"></i>  Clear Terminal
+            </button>
+            
             <br />
             <label for="tags" className="mb-2">
               <b className="heading">Output:</b>

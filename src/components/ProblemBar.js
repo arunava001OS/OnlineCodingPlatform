@@ -1,6 +1,6 @@
 import React from "react";
 
-function ProblemBar({ problem, setProblem }) {
+function ProblemBar({ problem, setProblem ,setCodescreen}) {
   return (
     <div className="col-md-4 col-sm-1 problembar">
       <div
@@ -8,8 +8,7 @@ function ProblemBar({ problem, setProblem }) {
         role="alert"
         onClick={() => {
           setProblem(problem);
-          window.location.replace("/#codescreen");
-          window.history.pushState("", "", '/');
+          setCodescreen();
         }}
       >
         {problem.id}. {problem.slug}
