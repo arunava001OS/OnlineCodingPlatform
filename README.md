@@ -1,5 +1,7 @@
 # OnlineCodingPlatform
 
+The site is currently hosted [here](https://onlinecodingplatform.web.app/)
+
 This project is created using ReactJS , Judge0 API and Bootstrap.
 
 ## Available Scripts
