@@ -1,4 +1,5 @@
 # OnlineCodingPlatform
+## Feel free to contribute. Do fork and star the repo :raised_hands:
 
 The site is currently hosted [here](https://onlinecodingplatform.web.app/)
 
