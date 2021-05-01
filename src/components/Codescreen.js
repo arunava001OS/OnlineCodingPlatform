@@ -10,6 +10,7 @@ function Codescreen({ problem, setCodescreen }) {
     if (item) {
       let codearea = document.getElementById("codearea");
       codearea.value = item;
+      setInput(item);
     }
   }, []);
   const handleSubmit = async (e) => {
